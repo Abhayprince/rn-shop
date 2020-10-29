@@ -1,9 +1,10 @@
 import CartItem from "../../models/cart-item";
 import { ADD_TO_CART, REMOVE_FROM_CART } from "../actions/cart";
 import { ADD_ORDER } from "../actions/orders";
+import { DELETE_USER_PRODUCT } from "../actions/products";
 
 const initialState = {
-  items: {},
+  items: {}, // {[productId]: {id:1, title:'',price:'',quantity:1,sum:1.0}}
   totalAmount: 0,
 };
 
@@ -59,6 +60,15 @@ export default (state = initialState, action) => {
       };
     case ADD_ORDER: // Because React dispatches actions to all the reducers
       return initialState;
+    case DELETE_USER_PRODUCT:
+      const cartItems = state.items;
+      const productSum = cartItems[action.productId].sum;
+      delete cartItems[action.productId];
+      return {
+        ...state,
+        items: cartItems,
+        totalAmount: state.totalAmount - productSum,
+      };
     default:
       return state;
   }

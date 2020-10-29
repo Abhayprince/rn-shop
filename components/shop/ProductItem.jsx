@@ -9,7 +9,6 @@ import {
   TouchableNativeFeedback,
   Platform,
 } from "react-native";
-import Colors from "../../constants/Colors";
 
 const ProductItem = (props) => {
   let TouchableComponent = TouchableOpacity; //TouchableComponent must be start with uppercase character to be used as React Jsx Component Tag
@@ -20,7 +19,7 @@ const ProductItem = (props) => {
   return (
     <View style={styles.product}>
       <View style={styles.touchableContainer}>
-        <TouchableComponent onPress={props.onViewDetail} useForeground>
+        <TouchableComponent onPress={props.onSelect} useForeground>
           <View>
             <View style={styles.imageContainer}>
               <Image style={styles.image} source={{ uri: props.image }} />
@@ -30,7 +29,7 @@ const ProductItem = (props) => {
               <Text style={styles.price}>${props.price.toFixed(2)}</Text>
             </View>
             <View style={styles.actions}>
-              <Button
+              {/* <Button
                 color={Colors.primary}
                 title="View Details"
                 onPress={props.onViewDetail}
@@ -39,7 +38,8 @@ const ProductItem = (props) => {
                 color={Colors.primary}
                 title="To Cart"
                 onPress={props.onAddToCart}
-              />
+              /> */}
+              {props.children}
             </View>
           </View>
         </TouchableComponent>
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   image: {
-    // Need to givve height and width because its network image, so react-native cannot identify its height and width (React-native can compute these on local images)
+    // Need to give height and width because its network image, so react-native cannot identify its height and width (React-native can compute these on local images)
     width: "100%",
     height: "100%",
   },

@@ -12,6 +12,7 @@ import CartScreen from "../screens/shop/CartScreen";
 import OrdersScreen from "../screens/shop/OrdersScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { color } from "react-native-reanimated";
+import UserProductsScreen from "../screens/user/UserProductsScreen";
 
 const defautNavigationOptions = {
   headerStyle: {
@@ -117,6 +118,38 @@ const OrdersNavigator = (props) => {
   );
 };
 
+const AdminStackNavigator = createStackNavigator();
+const AdminNavigator = (props) => {
+  return (
+    <AdminStackNavigator.Navigator screenOptions={defautNavigationOptions}>
+      <AdminStackNavigator.Screen
+        name="Admin"
+        component={UserProductsScreen}
+        options={({ navigation, route }) => {
+          return {
+            headerTitle: "Your Products",
+            headerLeft: () => {
+              return (
+                <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                  <Item
+                    title="Menu"
+                    iconName={
+                      Platform.OS === "android" ? "md-menu" : "ios-menu"
+                    }
+                    onPress={() => {
+                      navigation.toggleDrawer();
+                    }}
+                  />
+                </HeaderButtons>
+              );
+            },
+          };
+        }}
+      />
+    </AdminStackNavigator.Navigator>
+  );
+};
+
 const ShopDrawerNavigator = createDrawerNavigator();
 const ShopNavigator = (props) => {
   return (
@@ -149,6 +182,21 @@ const ShopNavigator = (props) => {
               return (
                 <Ionicons
                   name={Platform.OS === "android" ? "md-list" : "ios-list"}
+                  size={23}
+                  color={color}
+                />
+              );
+            },
+          }}
+        />
+        <ShopDrawerNavigator.Screen
+          name="Admin"
+          component={AdminNavigator}
+          options={{
+            drawerIcon: ({ focused, color, size }) => {
+              return (
+                <Ionicons
+                  name={Platform.OS === "android" ? "md-create" : "ios-create"}
                   size={23}
                   color={color}
                 />
