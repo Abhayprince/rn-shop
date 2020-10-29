@@ -9,6 +9,7 @@ import {
   TouchableNativeFeedback,
   Platform,
 } from "react-native";
+import Card from "../UI/Card";
 
 const ProductItem = (props) => {
   let TouchableComponent = TouchableOpacity; //TouchableComponent must be start with uppercase character to be used as React Jsx Component Tag
@@ -17,7 +18,7 @@ const ProductItem = (props) => {
   }
 
   return (
-    <View style={styles.product}>
+    <Card style={styles.product}>
       <View style={styles.touchableContainer}>
         <TouchableComponent onPress={props.onSelect} useForeground>
           <View>
@@ -44,19 +45,12 @@ const ProductItem = (props) => {
           </View>
         </TouchableComponent>
       </View>
-    </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   product: {
-    shadowColor: "black",
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 5, // Because Shadow only works on ios (Thats why wee need to add elevation. elevation works only on android)
-    borderRadius: 10,
-    backgroundColor: "white",
     height: 300,
     margin: 20,
   },
