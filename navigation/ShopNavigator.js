@@ -11,8 +11,8 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CartScreen from "../screens/shop/CartScreen";
 import OrdersScreen from "../screens/shop/OrdersScreen";
 import { Ionicons } from "@expo/vector-icons";
-import { color } from "react-native-reanimated";
 import UserProductsScreen from "../screens/user/UserProductsScreen";
+import EditProductScreen from "../screens/user/EditProductScreen";
 
 const defautNavigationOptions = {
   headerStyle: {
@@ -123,7 +123,7 @@ const AdminNavigator = (props) => {
   return (
     <AdminStackNavigator.Navigator screenOptions={defautNavigationOptions}>
       <AdminStackNavigator.Screen
-        name="Admin"
+        name="UserProducts"
         component={UserProductsScreen}
         options={({ navigation, route }) => {
           return {
@@ -143,6 +143,46 @@ const AdminNavigator = (props) => {
                 </HeaderButtons>
               );
             },
+            headerRight: () => {
+              return (
+                <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                  <Item
+                    title="Add Product"
+                    iconName={
+                      Platform.OS === "android" ? "md-create" : "ios-create"
+                    }
+                    onPress={() => {
+                      navigation.navigate("AddEditProduct");
+                    }}
+                  />
+                </HeaderButtons>
+              );
+            },
+          };
+        }}
+      />
+      <AdminStackNavigator.Screen
+        name="AddEditProduct"
+        component={EditProductScreen}
+        options={({ navigation, route }) => {
+          const productId = route.params?.productId;
+          return {
+            headerTitle: productId ? "Edit Product" : "Add Product",
+            // headerRight: () => {
+            //   return (
+            //     <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            //       <Item
+            //         title="Save"
+            //         iconName={
+            //           Platform.OS === "android"
+            //             ? "md-checkmark"
+            //             : "ios-checkmark"
+            //         }
+            //         onPress={() => {}}
+            //       />
+            //     </HeaderButtons>
+            //   );
+            // },
           };
         }}
       />

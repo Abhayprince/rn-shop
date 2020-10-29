@@ -61,7 +61,8 @@ export default (state = initialState, action) => {
     case ADD_ORDER: // Because React dispatches actions to all the reducers
       return initialState;
     case DELETE_USER_PRODUCT:
-      const cartItems = state.items;
+      if (!state.items[action.productId]) return state;
+      const cartItems = { ...state.items };
       const productSum = cartItems[action.productId].sum;
       delete cartItems[action.productId];
       return {

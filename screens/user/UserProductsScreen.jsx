@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Text, FlatList, Button } from "react-native";
+import { StyleSheet, View, Text, FlatList, Button, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import ProductItem from "../../components/shop/ProductItem";
 import Colors from "../../constants/Colors";
@@ -8,6 +8,10 @@ import * as productsActions from "../../store/actions/products";
 const UserProductsScreen = (props) => {
   const products = useSelector((state) => state.products.userProducts);
   const dispatch = useDispatch();
+
+  const editProductHandler = (productId) => {
+    props.navigation.navigate("AddEditProduct", { productId });
+  };
 
   return (
     <FlatList
@@ -18,19 +22,32 @@ const UserProductsScreen = (props) => {
           title={itemData.item.title}
           price={itemData.item.price}
           image={itemData.item.imageUrl}
-          onSelect={() => {
-            props.navigation.navigate("ProductDetail", {
-              productId: itemData.item.id,
-              title: itemData.item.title,
-            });
-          }}
+          onSelect={() => editProductHandler(itemData.item.id)}
         >
-          <Button color={Colors.primary} title="Edit" onPress={() => {}} />
+          <Button
+            color={Colors.primary}
+            title="Edit"
+            onPress={() => editProductHandler(itemData.item.id)}
+          />
           <Button
             color={Colors.primary}
             title="Delete"
             onPress={() => {
-              dispatch(productsActions.deleteUserProduct(itemData.item.id));
+              Alert.alert(
+                "Delete Product",
+                "Do you really want to delete this product?",
+                [
+                  {
+                    text: "Yes",
+                    onPress: () => {
+                      dispatch(
+                        productsActions.deleteUserProduct(itemData.item.id)
+                      );
+                    },
+                  },
+                  { text: "No", style: "destructive" },
+                ]
+              );
             }}
           />
         </ProductItem>
