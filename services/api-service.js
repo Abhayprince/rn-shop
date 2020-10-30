@@ -28,7 +28,7 @@ export const patch = (url, data) =>
     body: JSON.stringify(data),
   });
 
-export const deleteApi = (url) =>
+export const deleteProduct = (url) =>
   fetch(`${baseUrl}/${url}`, {
     method: "DELETE",
   });

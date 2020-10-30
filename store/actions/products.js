@@ -6,10 +6,16 @@ export const ADD_PRODUCT = "ADD_PRODUCT";
 export const UPDATE_PRODUCT = "UPDATE_PRODUCT";
 export const SET_PRODUCTS = "SET_PRODUCTS";
 
-export const deleteUserProduct = (productId) => ({
-  type: DELETE_USER_PRODUCT,
-  productId,
-});
+export const deleteUserProduct = (productId) => {
+  return (dispatch) => {
+    api.deleteProduct(`products/${productId}.json`).then(() => {
+      dispatch({
+        type: DELETE_USER_PRODUCT,
+        productId,
+      });
+    });
+  };
+};
 export const fetchProducts = () => {
   return async (dispatch) => {
     try {
@@ -72,10 +78,22 @@ export const addProduct = (title, price, imageUrl, description) => {
     }
   };
 };
-export const updateProduct = (productId, title, imageUrl, description) => ({
-  type: UPDATE_PRODUCT,
-  productId,
-  title,
-  imageUrl,
-  description,
-});
+export const updateProduct = (productId, title, imageUrl, description) => {
+  return (dispatch) => {
+    api
+      .patch(`products/${productId}.json`, {
+        title,
+        imageUrl,
+        description,
+      })
+      .then(() => {
+        dispatch({
+          type: UPDATE_PRODUCT,
+          productId,
+          title,
+          imageUrl,
+          description,
+        });
+      });
+  };
+};
