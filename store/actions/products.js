@@ -79,21 +79,27 @@ export const addProduct = (title, price, imageUrl, description) => {
   };
 };
 export const updateProduct = (productId, title, imageUrl, description) => {
-  return (dispatch) => {
-    api
-      .patch(`products/${productId}.json`, {
+  return async (dispatch) => {
+    try {
+      const response = await api.patch(`products/${productId}.json`, {
         title,
         imageUrl,
         description,
-      })
-      .then(() => {
-        dispatch({
-          type: UPDATE_PRODUCT,
-          productId,
-          title,
-          imageUrl,
-          description,
-        });
       });
+
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      }
+
+      dispatch({
+        type: UPDATE_PRODUCT,
+        productId,
+        title,
+        imageUrl,
+        description,
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 };
