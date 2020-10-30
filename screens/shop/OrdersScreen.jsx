@@ -17,22 +17,26 @@ const OrdersScreen = (props) => {
   const orders = useSelector((state) => state.orders.orders);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
   const dispatch = useDispatch();
 
   const loadOrders = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setIsRefreshing(true);
       setError(null);
       await dispatch(ordersActions.fetchOrders());
     } catch (error) {
       setError(error.message);
     }
-    setIsLoading(false);
+    setIsRefreshing(false);
   }, [dispatch]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", loadOrders); // Run every time when this screen gets focus from drawer
+    const unsubscribe = navigation.addListener("focus", () => {
+      setIsLoading(true);
+      loadOrders().finally(() => setIsLoading(false));
+    }); // Run every time when this screen gets focus from drawer
 
     return unsubscribe; //cleanup
   }, [navigation, loadOrders]);
@@ -55,6 +59,8 @@ const OrdersScreen = (props) => {
 
   return (
     <FlatList
+      onRefresh={loadOrders}
+      refreshing={isRefreshing}
       data={orders}
       renderItem={(itemData) => (
         <OrderItem

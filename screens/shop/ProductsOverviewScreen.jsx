@@ -19,18 +19,19 @@ const ProductsOverviewScreen = (props) => {
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
 
   const loadProducts = useCallback(async () => {
     console.log("loadproducts");
     try {
-      setIsLoading(true);
+      setIsRefreshing(true);
       setError(null);
       await dispatch(productsActions.fetchProducts());
     } catch (error) {
       setError(error.message);
     }
-    setIsLoading(false);
+    setIsRefreshing(false);
   }, [dispatch]);
 
   // useEffect(() => {
@@ -40,8 +41,10 @@ const ProductsOverviewScreen = (props) => {
   // }, [loadProducts]);
 
   useEffect(() => {
-    console.log("useEffect navigation Focus");
-    const unsubscribe = navigation.addListener("focus", loadProducts); // Run every time when this screen gets focus from drawer
+    const unsubscribe = navigation.addListener("focus", () => {
+      setIsLoading(true);
+      loadProducts().finally(() => setIsLoading(false));
+    }); // Run every time when this screen gets focus from drawer
 
     return unsubscribe; //cleanup
   }, [navigation, loadProducts]);
@@ -74,6 +77,8 @@ const ProductsOverviewScreen = (props) => {
   };
   return (
     <FlatList
+      onRefresh={loadProducts}
+      refreshing={isRefreshing}
       data={products}
       keyExtractor={(item, index) => item.id}
       renderItem={(itemData) => (
