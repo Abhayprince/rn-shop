@@ -2,8 +2,10 @@ export const baseUrl = "https://rn-shop-63991.firebaseio.com";
 
 export const get = (url) => fetch(`${baseUrl}/${url}`);
 
-export const post = (url, data) =>
-  fetch(`${baseUrl}/${url}`, {
+export const post = (url, data) => postWithFullUrl(`${baseUrl}/${url}`, data);
+
+export const postWithFullUrl = (fullUrl, data) =>
+  fetch(fullUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

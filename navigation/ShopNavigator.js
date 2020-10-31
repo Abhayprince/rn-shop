@@ -13,6 +13,7 @@ import OrdersScreen from "../screens/shop/OrdersScreen";
 import { Ionicons } from "@expo/vector-icons";
 import UserProductsScreen from "../screens/user/UserProductsScreen";
 import EditProductScreen from "../screens/user/EditProductScreen";
+import AuthScreen from "../screens/user/AuthScreen";
 
 const defautNavigationOptions = {
   headerStyle: {
@@ -190,6 +191,19 @@ const AdminNavigator = (props) => {
   );
 };
 
+const AuthStackNavigator = createStackNavigator();
+const AuthNavigator = (props) => {
+  return (
+    <AuthStackNavigator.Navigator screenOptions={defautNavigationOptions}>
+      <AuthStackNavigator.Screen
+        name="AuthScreen"
+        component={AuthScreen}
+        options={{ headerTitle: "Authenticate" }}
+      />
+    </AuthStackNavigator.Navigator>
+  );
+};
+
 const ShopDrawerNavigator = createDrawerNavigator();
 const ShopNavigator = (props) => {
   return (
@@ -199,6 +213,7 @@ const ShopNavigator = (props) => {
           activeTintColor: Colors.primary,
         }}
       >
+        <ShopDrawerNavigator.Screen name="Auth" component={AuthNavigator} />
         <ShopDrawerNavigator.Screen
           name="Products"
           component={ProductsNavigator}

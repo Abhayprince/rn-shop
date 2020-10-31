@@ -8,8 +8,8 @@ import {
 } from "../actions/products";
 
 const initialState = {
-  availableProducts: PRODUCTS,
-  userProducts: PRODUCTS.filter((p) => p.ownerId === "u1"),
+  availableProducts: [],
+  userProducts: [],
 };
 
 export default (state = initialState, action) => {
@@ -17,12 +17,12 @@ export default (state = initialState, action) => {
     case SET_PRODUCTS:
       return {
         availableProducts: action.products,
-        userProducts: action.products.filter((p) => p.ownerId === "u1"),
+        userProducts: action.userProducts,
       };
     case ADD_PRODUCT:
       const newProduct = new Product(
         action.id,
-        "u1",
+        action.ownerId,
         action.title,
         action.imageUrl,
         action.description,
@@ -50,7 +50,9 @@ export default (state = initialState, action) => {
         return {
           ...state,
           userProducts: userProducts,
-          availableProducts: userProducts.filter((p) => p.ownerId === "u1"),
+          availableProducts: userProducts.filter(
+            (p) => p.ownerId === action.ownerId
+          ),
         };
       }
       return state;
@@ -64,7 +66,6 @@ export default (state = initialState, action) => {
           (p) => p.id !== action.productId
         ),
       };
-      break;
     default:
       return state;
   }

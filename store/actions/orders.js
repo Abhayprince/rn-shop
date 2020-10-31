@@ -5,9 +5,10 @@ export const ADD_ORDER = "ADD_ORDER";
 export const SET_ORDERS = "SET_ORDERS";
 
 export const fetchOrders = () => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const { auth } = getState(); // Gives complete Redux State Snapshot (Thanks to ReduxThunk)
     try {
-      const response = await api.get(`orders/u1.json`);
+      const response = await api.get(`orders/${auth.userId}.json`);
       if (!response.ok) {
         throw new Error("An error has occurred");
       }
@@ -29,12 +30,14 @@ export const fetchOrders = () => {
 };
 
 export const addOrder = (items, totalAmount) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     // We can do our async tasks here (Thanks to ReduxThunk)
+    const { auth } = getState();
+    const { userId, token } = auth;
     try {
       const date = new Date();
 
-      const response = await api.post("orders/u1.json", {
+      const response = await api.post(`orders/${userId}.json?auth=${token}`, {
         items,
         totalAmount,
         date: date.toISOString(),
