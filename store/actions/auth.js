@@ -1,7 +1,11 @@
 import * as api from "../../services/api-service";
+import * as storage from "../../services/storage-service";
 
 export const LOGIN = "LOGIN";
 export const SIGNUP = "SIGNUP";
+export const AUTHENTICATE = "AUTHENTICATE";
+export const DID_TRY_AUTO_LOGIN = "DID_TRY_AUTO_LOGIN";
+export const LOGOUT = "LOGOUT";
 
 const apiKey = "AIzaSyBHKRTjVMQS2RuBxZoMMorAznRwbq14zPE";
 const signupUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`;
@@ -19,6 +23,30 @@ const ErrorMessages = {
   INVALID_PASSWORD:
     "The password is invalid or the user does not have a password.",
   USER_DISABLED: "The user account has been disabled by an administrator.",
+};
+
+let timer;
+
+export const tryAutoLogin = () => ({ type: DID_TRY_AUTO_LOGIN });
+
+export const authenticate = (token, userId, expiryTimeMs) => {
+  return (dispatch) => {
+    timer = setTimeout(() => {
+      dispatch(logout());
+      console.log("Auto logout");
+    }, expiryTimeMs);
+    return dispatch({ type: AUTHENTICATE, token, userId });
+  };
+};
+
+export const logout = () => {
+  return (dispatch) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    storage.readFromStorage();
+    dispatch({ type: LOGOUT });
+  };
 };
 
 export const login = (email, password) => {
@@ -57,6 +85,7 @@ export const login = (email, password) => {
       responseData is{
         "displayName": "",
         "email": "test@test.com",
+        "expiresIn": "3600",
         "idToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6InRCME0yQSJ9.eyJpc3MiOiJodHRwczovL2lkZW50aXR5dG9vbGtpdC5nb29nbGUuY29tLyIsImF1ZCI6InJuLXNob3AtNjM5OTEiLCJpYXQiOjE2MDQxNjU5MTMsImV4cCI6MTYwNTM3NTUxMywidXNlcl9pZCI6IjVvd2Y4ZWluZUxkRjdFWmdIZ1hDb1I3enQ2STMiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQiLCJ2ZXJpZmllZCI6ZmFsc2V9.rMBZP4Swka2H6gNyd0RNOaI4B5kYHiV7BCM0GuJSN_AIf5cfABmhvrAW8s37zLkYUCpLdd-5rP6Bs5Jp-dNLWEYybEnwc6rUSBQvd36p-APMHj4f2aVWMiB4mSydyhdQkPDWnYXNnShWSotigAD04-5UaLuGo3HimOest4abLJ_xOv3gfMVzSaaMk9jxcks5KJQzgrccKMq1XscXNIskry5H_Ddg4UnAkIZsD5g6PuSlr2jvPpOTu63D1xoFTAAUuxE2Otrf9m8tvqH_WcxrzZep9_gp4a83uT6D-fLapeC-_pm70Isp9PexPQ3LR3McPwRmtmG21T6_xmwePtGwAA",
         "kind": "identitytoolkit#VerifyPasswordResponse",
         "localId": "5owf8eineLdF7EZgHgXCoR7zt6I3",  //UserId
@@ -64,10 +93,16 @@ export const login = (email, password) => {
         }
     */
       console.log("login", responseData);
-      const { idToken, localId } = responseData;
-      console.log("idToken, localId", idToken, localId);
+      const { idToken, localId, expiresIn } = responseData;
 
-      dispatch({ type: LOGIN, token: idToken, userId: localId });
+      if (idToken && localId && expiresIn) {
+        const currentTimeMs = new Date().getTime();
+        const expireInMs = +expiresIn * 1000; // As expiresIn is in Seconds
+        const expirationDate = new Date(currentTimeMs + expireInMs);
+        storage.saveToStorage(idToken, localId, expirationDate);
+
+        dispatch(authenticate(idToken, localId, expireInMs));
+      }
     } catch (error) {
       throw error;
     }
@@ -116,9 +151,15 @@ export const signup = (email, password) => {
         "refreshToken": "AG8BCneJqxbgDqN5iVZRyy-I3MSXNSwCtboJnDYJBwH2MwBe4UiZt7iUerSfW0CNkjFCMfRMalg_Q3uMubOFSrZiEygP-jRMcjTO7Sts972ufqvhStZhSovt3IbhD8bl-tLe2pu6mFbSof20ER1zg99DRHend0WzA-N7hGUYTdvJUtZd07_Bo5iaC2YGQq5SIZqYL2VvC1ye",
         }
 */
-      const { idToken, localId } = responseData;
+      const { idToken, localId, expiresIn } = responseData;
 
-      dispatch({ type: SIGNUP, token: idToken, userId: localId });
+      if (idToken && localId && expiresIn) {
+        const currentTimeMs = new Date().getTime();
+        const expireInMs = +expiresIn * 1000; // As expiresIn is in Seconds
+        const expirationDate = new Date(currentTimeMs + expireInMs);
+        storage.saveToStorage(idToken, localId, expirationDate);
+        dispatch(authenticate(idToken, localId, expireInMs));
+      }
     } catch (error) {
       throw error;
     }

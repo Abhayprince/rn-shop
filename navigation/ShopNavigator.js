@@ -1,9 +1,13 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+  DrawerItem,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import ProductsOverviewScreen from "../screens/shop/ProductsOverviewScreen";
-import { Platform, Button, Alert } from "react-native";
+import { Platform, Button, Alert, SafeAreaView, View } from "react-native";
 import Colors from "../constants/Colors";
 import ProductDetailScreen from "../screens/shop/ProductDetailScreen";
 import HeaderButton from "../components/UI/HeaderButton";
@@ -14,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import UserProductsScreen from "../screens/user/UserProductsScreen";
 import EditProductScreen from "../screens/user/EditProductScreen";
 import AuthScreen from "../screens/user/AuthScreen";
+import DrawerContent from "./DrawerContent";
 
 const defautNavigationOptions = {
   headerStyle: {
@@ -192,7 +197,7 @@ const AdminNavigator = (props) => {
 };
 
 const AuthStackNavigator = createStackNavigator();
-const AuthNavigator = (props) => {
+export const AuthNavigator = (props) => {
   return (
     <AuthStackNavigator.Navigator screenOptions={defautNavigationOptions}>
       <AuthStackNavigator.Screen
@@ -207,60 +212,62 @@ const AuthNavigator = (props) => {
 const ShopDrawerNavigator = createDrawerNavigator();
 const ShopNavigator = (props) => {
   return (
-    <NavigationContainer>
-      <ShopDrawerNavigator.Navigator
-        drawerContentOptions={{
-          activeTintColor: Colors.primary,
+    //<NavigationContainer>
+    <ShopDrawerNavigator.Navigator
+      drawerContentOptions={{
+        activeTintColor: Colors.primary,
+      }}
+      initialRouteName="Products"
+      drawerContent={(props) => <DrawerContent {...props} />}
+    >
+      {/* <ShopDrawerNavigator.Screen name="Auth" component={AuthNavigator} /> */}
+      <ShopDrawerNavigator.Screen
+        name="Products"
+        component={ProductsNavigator}
+        options={{
+          drawerIcon: ({ focused, color, size }) => {
+            return (
+              <Ionicons
+                name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+                size={23}
+                color={color}
+              />
+            );
+          },
         }}
-      >
-        <ShopDrawerNavigator.Screen name="Auth" component={AuthNavigator} />
-        <ShopDrawerNavigator.Screen
-          name="Products"
-          component={ProductsNavigator}
-          options={{
-            drawerIcon: ({ focused, color, size }) => {
-              return (
-                <Ionicons
-                  name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
-                  size={23}
-                  color={color}
-                />
-              );
-            },
-          }}
-        />
-        <ShopDrawerNavigator.Screen
-          name="Orders"
-          component={OrdersNavigator}
-          options={{
-            drawerIcon: ({ focused, color, size }) => {
-              return (
-                <Ionicons
-                  name={Platform.OS === "android" ? "md-list" : "ios-list"}
-                  size={23}
-                  color={color}
-                />
-              );
-            },
-          }}
-        />
-        <ShopDrawerNavigator.Screen
-          name="Admin"
-          component={AdminNavigator}
-          options={{
-            drawerIcon: ({ focused, color, size }) => {
-              return (
-                <Ionicons
-                  name={Platform.OS === "android" ? "md-create" : "ios-create"}
-                  size={23}
-                  color={color}
-                />
-              );
-            },
-          }}
-        />
-      </ShopDrawerNavigator.Navigator>
-    </NavigationContainer>
+      />
+      <ShopDrawerNavigator.Screen
+        name="Orders"
+        component={OrdersNavigator}
+        options={{
+          drawerIcon: ({ focused, color, size }) => {
+            return (
+              <Ionicons
+                name={Platform.OS === "android" ? "md-list" : "ios-list"}
+                size={23}
+                color={color}
+              />
+            );
+          },
+        }}
+      />
+      <ShopDrawerNavigator.Screen
+        name="Admin"
+        component={AdminNavigator}
+        options={{
+          drawerIcon: ({ focused, color, size }) => {
+            return (
+              <Ionicons
+                name={Platform.OS === "android" ? "md-create" : "ios-create"}
+                size={23}
+                color={color}
+              />
+            );
+          },
+        }}
+      />
+    </ShopDrawerNavigator.Navigator>
+    //</NavigationContainer>
   );
 };
 
